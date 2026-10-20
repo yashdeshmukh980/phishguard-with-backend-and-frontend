@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../api/api'
+import { categorize, styles, dateOf } from '../utils/verdict'
+
+const filters = ['all', 'safe', 'suspicious', 'malicious']
 
 export default function History() {
   const [scans, setScans] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [filter, setFilter] = useState('all')
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -29,41 +33,62 @@ export default function History() {
     load()
   }, [navigate])
 
-  const verdictColor = (verdict) => {
-    const v = String(verdict).toUpperCase()
-    if (v.includes('SAFE')) return 'text-emerald-400'
-    if (v.includes('SUSPICIOUS')) return 'text-yellow-400'
-    return 'text-red-400'
-  }
+  const shown = scans.filter((s) => filter === 'all' || categorize(s.verdict) === filter)
 
   const formatDate = (s) => {
-    const raw = s.createdAt || s.scannedAt
-    return raw ? new Date(raw).toLocaleString() : ''
+    const d = dateOf(s)
+    return d ? d.toLocaleString() : ''
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
-      <h2 className="text-2xl font-bold mb-6">Scan history</h2>
+    <div className="max-w-4xl mx-auto p-4 md:p-8">
+      <h2 className="text-2xl font-bold mb-1">Scan History</h2>
+      <p className="text-slate-400 mb-5">Every link you have checked, newest first.</p>
+
+      <div className="flex flex-wrap gap-2 mb-5">
+        {filters.map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={
+              'px-4 py-2 rounded-full text-sm capitalize border ' +
+              (filter === f
+                ? 'bg-brand/15 text-brand border-brand/40'
+                : 'bg-panel text-slate-300 border-line hover:text-white')
+            }
+          >
+            {f}
+          </button>
+        ))}
+      </div>
 
       {loading && <p className="text-slate-400">Loading...</p>}
       {error && <p className="text-red-400">{error}</p>}
-      {!loading && !error && scans.length === 0 && (
-        <p className="text-slate-400">No scans yet. Go to the Scan page and check a link.</p>
+      {!loading && !error && shown.length === 0 && (
+        <p className="text-slate-400">No scans to show here yet.</p>
       )}
 
       <div className="space-y-3">
-        {scans.map((s, i) => (
-          <div key={s.id || i} className="bg-slate-800 p-4 rounded-xl flex items-center justify-between gap-4">
-            <div className="min-w-0">
-              <p className="truncate text-slate-100">{s.url}</p>
-              <p className="text-xs text-slate-400">{formatDate(s)}</p>
+        {shown.map((s, i) => {
+          const st = styles[categorize(s.verdict)]
+          return (
+            <div
+              key={s.id || i}
+              className="bg-panel border border-line rounded-xl p-4 flex items-center justify-between gap-4"
+            >
+              <div className="min-w-0">
+                <p className="truncate text-slate-100">{s.url}</p>
+                <p className="text-xs text-slate-400 mt-1">{formatDate(s)}</p>
+              </div>
+              <div className="text-right shrink-0">
+                <span className={'inline-block px-3 py-1 rounded-full text-xs font-semibold border ' + st.bg + ' ' + st.border + ' ' + st.text}>
+                  {s.verdict}
+                </span>
+                <p className="text-sm text-slate-300 mt-1">Score: {s.score}</p>
+              </div>
             </div>
-            <div className="text-right shrink-0">
-              <p className={'font-bold ' + verdictColor(s.verdict)}>{s.verdict}</p>
-              <p className="text-sm text-slate-300">Score: {s.score}</p>
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

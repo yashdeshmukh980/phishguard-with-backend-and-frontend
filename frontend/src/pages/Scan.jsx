@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Link2, Search } from 'lucide-react'
 import api from '../api/api'
+import { categorize, styles, reasonText } from '../utils/verdict'
 
 export default function Scan() {
   const [url, setUrl] = useState('')
@@ -30,50 +32,50 @@ export default function Scan() {
     }
   }
 
-  const verdictColor = (verdict) => {
-    const v = String(verdict).toUpperCase()
-    if (v.includes('SAFE')) return 'text-emerald-400'
-    if (v.includes('SUSPICIOUS')) return 'text-yellow-400'
-    return 'text-red-400'
-  }
-
-  const reasonText = (r) =>
-    typeof r === 'string' ? r : r.description || r.message || r.reason || JSON.stringify(r)
+  const st = result ? styles[categorize(result.verdict)] : null
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
-      <form onSubmit={handleScan} className="bg-slate-800 p-6 rounded-xl shadow-lg">
-        <label className="block mb-2 text-slate-200">Enter a link to scan</label>
-        <input
-          type="text"
-          placeholder="https://example.com"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          required
-          className="w-full mb-4 p-3 rounded-lg bg-slate-700 text-white placeholder-slate-400 outline-none focus:ring-2 focus:ring-emerald-400"
-        />
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full p-3 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-semibold disabled:opacity-50"
-        >
-          {loading ? 'Scanning...' : 'Scan'}
-        </button>
+    <div className="max-w-3xl mx-auto p-4 md:p-8">
+      <h2 className="text-2xl font-bold mb-1">Scan Link</h2>
+      <p className="text-slate-400 mb-6">
+        Paste a link to check it for phishing, malware and other threats.
+      </p>
+
+      <form onSubmit={handleScan} className="bg-panel border border-line rounded-2xl p-6">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex-1 flex items-center gap-3 bg-ink border border-line rounded-full px-4 focus-within:border-brand">
+            <Link2 size={18} className="text-slate-400" />
+            <input
+              type="text"
+              placeholder="https://example.com"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              required
+              className="flex-1 bg-transparent py-3 outline-none text-white placeholder-slate-500"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-brand text-ink font-semibold hover:opacity-90 disabled:opacity-50"
+          >
+            <Search size={18} />
+            {loading ? 'Scanning...' : 'Scan'}
+          </button>
+        </div>
       </form>
 
       {error && <p className="mt-4 text-red-400">{error}</p>}
 
       {result && (
-        <div className="mt-6 bg-slate-800 p-6 rounded-xl shadow-lg">
+        <div className={'mt-6 rounded-2xl border p-6 ' + st.bg + ' ' + st.border}>
           <p className="text-slate-400 text-sm">Verdict</p>
-          <p className={'text-3xl font-bold mb-2 ' + verdictColor(result.verdict)}>
-            {result.verdict}
-          </p>
+          <p className={'text-3xl font-bold mb-3 ' + st.text}>{result.verdict}</p>
           <p className="text-slate-400 text-sm">Risk score</p>
           <p className="text-2xl font-semibold mb-4">{result.score}</p>
 
           <p className="text-slate-400 text-sm mb-2">Reasons</p>
-          <ul className="list-disc list-inside space-y-1">
+          <ul className="list-disc list-inside space-y-1 text-slate-200">
             {(result.reasons || []).map((r, i) => (
               <li key={i}>{reasonText(r)}</li>
             ))}
