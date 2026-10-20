@@ -1,16 +1,90 @@
-# React + Vite
+# PhishGuard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+PhishGuard is a full-stack web app that checks links for phishing risk before you click them. Paste a URL, and PhishGuard returns a verdict, a risk score and the reasons behind it. Every scan is saved to your account, so you can review your history and see your overall risk level on a dashboard.
 
-Currently, two official plugins are available:
+![PhishGuard dashboard](docs/screenshots/dashboard.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- Register and log in with secure accounts (passwords hashed with BCrypt, sessions handled with JWT)
+- Scan any link and get a verdict, a risk score and a list of reasons
+- Scan history saved per user, newest first, with filters for safe, suspicious and malicious links
+- Dashboard with scan statistics, recent scans and an overall risk gauge
+- Protected pages: the app redirects to the login page if you are not signed in
+- Responsive dark interface built with Tailwind CSS
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+![PhishGuard login](docs/screenshots/login.png)
 
-## Expanding the ESLint configuration
+## Tech stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+| Part | Technology |
+| --- | --- |
+| Frontend | React (Vite), React Router, Axios, Tailwind CSS |
+| Backend | Java, Spring Boot, Spring Security, Spring Data JPA |
+| Authentication | JWT (jjwt), BCrypt |
+| Database | MySQL |
+
+## Project structure
+
+```
+phishguard/
+  src/         Spring Boot backend
+  pom.xml
+  frontend/    React frontend
+```
+
+## Getting started
+
+### Requirements
+
+- Java 21 or newer
+- Maven (or the included `mvnw` wrapper)
+- MySQL running locally
+- Node.js 20 or newer
+
+### 1. Database
+
+Create an empty database named `phishguard`. The tables are created automatically on first run.
+
+### 2. Backend
+
+The database password and JWT secret are not stored in the code. Set them as environment variables before starting the backend.
+
+On Windows PowerShell:
+
+```
+$env:DB_PASSWORD='your-mysql-password'
+$env:JWT_SECRET='a-long-random-string'
+mvn spring-boot:run
+```
+
+The API runs on `http://localhost:8080`. Optional variables: `DB_URL` and `DB_USERNAME` (defaults: `jdbc:mysql://localhost:3306/phishguard` and `root`).
+
+### 3. Frontend
+
+```
+cd frontend
+npm install
+npm run dev
+```
+
+The app runs on `http://localhost:5173`.
+
+## API
+
+| Method | Endpoint | Description | Auth |
+| --- | --- | --- | --- |
+| POST | `/api/auth/register` | Create an account | No |
+| POST | `/api/auth/login` | Log in and receive a JWT | No |
+| POST | `/api/scans` | Scan a URL | Yes |
+| GET | `/api/scans` | List your scan history | Yes |
+
+## Roadmap
+
+- Threat categories for each scan (phishing, malware, suspicious domain)
+- Deployment with a hosted database
+- Admin dashboard
+
+## Author
+
+Built by Yash Deshmukh. GitHub: [yashdeshmukh980](https://github.com/yashdeshmukh980)
