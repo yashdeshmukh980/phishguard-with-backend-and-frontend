@@ -18,7 +18,7 @@ export default function Login() {
         'user',
         JSON.stringify({ name: res.data.name, email: res.data.email, role: res.data.role })
       )
-      navigate('/scan')
+      navigate('/dashboard')
     } catch (err) {
       setError('Invalid email or password')
     }
