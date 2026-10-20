@@ -1,5 +1,6 @@
 package com.yash.phishguard.dto;
 
+import com.yash.phishguard.model.ThreatCategory;
 import com.yash.phishguard.model.Verdict;
 import java.time.LocalDateTime;
 
@@ -8,13 +9,16 @@ public class ScanHistoryItem {
     private String url;
     private Integer score;
     private Verdict verdict;
+    private ThreatCategory category;
     private LocalDateTime scannedAt;
 
-    public ScanHistoryItem(Long id, String url, Integer score, Verdict verdict, LocalDateTime scannedAt) {
+    public ScanHistoryItem(Long id, String url, Integer score, Verdict verdict,
+                           ThreatCategory category, LocalDateTime scannedAt) {
         this.id = id;
         this.url = url;
         this.score = score;
         this.verdict = verdict;
+        this.category = category;
         this.scannedAt = scannedAt;
     }
 
@@ -22,5 +26,6 @@ public class ScanHistoryItem {
     public String getUrl() { return url; }
     public Integer getScore() { return score; }
     public Verdict getVerdict() { return verdict; }
+    public ThreatCategory getCategory() { return category; }
     public LocalDateTime getScannedAt() { return scannedAt; }
 }

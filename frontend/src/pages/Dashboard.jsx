@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Link2, Search, ShieldCheck, ShieldAlert, X, Check, Lightbulb, Clock, ChevronRight } from 'lucide-react'
 import api from '../api/api'
+import ThreatTypes from '../components/ThreatTypes'
 
 const categorize = (verdict) => {
   const v = String(verdict || '').toUpperCase()
@@ -87,7 +88,7 @@ export default function Dashboard() {
 
   const load = useCallback(async () => {
     try {
-      const res = await api.get('/scans')
+      const res = await api.get('/scans', { params: { size: 1000 } })
       const list = Array.isArray(res.data) ? res.data : res.data.content || []
       setScans(list)
     } catch (err) {
@@ -278,7 +279,8 @@ export default function Dashboard() {
                 : 'Scan a link to see your risk level.'}
             </p>
           </section>
-
+          
+          <ThreatTypes scans={scans} />
           <section className="bg-panel border border-line rounded-2xl p-6">
             <div className="flex items-center gap-3 mb-4">
               <Lightbulb className="text-brand" size={22} />

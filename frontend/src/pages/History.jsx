@@ -15,7 +15,7 @@ export default function History() {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await api.get('/scans')
+        const res = await api.get('/scans', { params: { size: 200 } })
         const list = Array.isArray(res.data) ? res.data : res.data.content || []
         setScans(list)
       } catch (err) {

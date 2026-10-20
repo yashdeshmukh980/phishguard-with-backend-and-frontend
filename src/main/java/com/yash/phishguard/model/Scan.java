@@ -23,6 +23,9 @@ public class Scan {
     @Enumerated(EnumType.STRING)
     private Verdict verdict;
 
+    @Enumerated(EnumType.STRING)
+    private ThreatCategory category;
+
     private LocalDateTime scannedAt = LocalDateTime.now();
 
     // Getters and setters
@@ -36,6 +39,8 @@ public class Scan {
     public void setRiskScore(Integer riskScore) { this.riskScore = riskScore; }
     public Verdict getVerdict() { return verdict; }
     public void setVerdict(Verdict verdict) { this.verdict = verdict; }
+    public ThreatCategory getCategory() { return category; }
+    public void setCategory(ThreatCategory category) { this.category = category; }
     public LocalDateTime getScannedAt() { return scannedAt; }
     public void setScannedAt(LocalDateTime scannedAt) { this.scannedAt = scannedAt; }
 }

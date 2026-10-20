@@ -10,6 +10,7 @@ import com.yash.phishguard.repository.ScanReasonRepository;
 import com.yash.phishguard.repository.ScanRepository;
 import com.yash.phishguard.repository.UserRepository;
 import com.yash.phishguard.scanner.RuleResult;
+import com.yash.phishguard.scanner.ThreatCategorizer;
 import com.yash.phishguard.service.ScanResult;
 import com.yash.phishguard.service.ScanService;
 import jakarta.validation.Valid;
@@ -58,6 +59,7 @@ public class ScanController {
         scan.setUrl(result.getUrl());
         scan.setRiskScore(result.getScore());
         scan.setVerdict(result.getVerdict());
+        scan.setCategory(ThreatCategorizer.categorize(result.getVerdict(), result.getReasons()));
         scan = scanRepository.save(scan);
 
         for (RuleResult r : result.getReasons()) {
@@ -89,7 +91,8 @@ public class ScanController {
                 .getContent()
                 .stream()
                 .map(s -> new ScanHistoryItem(
-                        s.getId(), s.getUrl(), s.getRiskScore(), s.getVerdict(), s.getScannedAt()))
+                        s.getId(), s.getUrl(), s.getRiskScore(), s.getVerdict(),
+                        s.getCategory(), s.getScannedAt()))
                 .toList();
     }
 }
